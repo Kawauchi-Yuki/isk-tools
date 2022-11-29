@@ -1,0 +1,16 @@
+
+Django==2.1.12
+django-pyodbc-azure==2.1.0.0
+et-xmlfile==1.0.1
+jdcal==1.4.1
+openpyxl==2.6.3
+pyodbc==4.0.35
+pytz==2019.2
+sqlparse==0.3.0
+
+cx-Oracle==8.3.0
+jaconv==0.2.4
+bootstrap4==0.1.0
+django-bootstrap-datepicker-plus==3.0.5
+
+

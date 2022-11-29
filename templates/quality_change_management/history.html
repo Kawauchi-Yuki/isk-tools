@@ -1,0 +1,16 @@
+{% load staticfiles %}
+
+<ol class="step">
+    {% for step in step_list %}
+
+    <!--現在のステップ-->
+    {% if step.step == present_step %}
+    <li class="is-current">{{ step.step_name }}</li>
+
+    <!--その他のステップ-->
+    {% else %}
+    <li>{{ step.step_name }}</li>
+
+    {% endif %}
+    {% endfor %}
+</ol>

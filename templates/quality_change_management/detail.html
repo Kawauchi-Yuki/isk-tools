@@ -1,0 +1,106 @@
+{% extends 'quality_change_management/layout.html' %}
+{% load staticfiles %}
+
+{% block title %}変更管理ツール{% endblock %}
+
+{% block header %}
+<script>
+window.onload = function() {
+    next_step();
+    department('id_division', 'id_department', 'id_user');
+    user('id_department', 'id_user');
+    status_check();
+};
+</script>
+{% endblock %}
+
+{% block content %}
+<!--ステップ表示-->
+<div class="row">
+    <div class="col-8"><h1>{{ step_name }}</h1></div>
+    <!--TOPの履歴を残したいのでリンクではなく、ブラウザバック-->
+    <div class="col-4"><button class="btn btn-primary w-10 btn-lg" type="button" onclick="location.href='{% url 'quality_change_management:top_page' %}';">TOPに戻る</button></div>
+</div>
+
+
+<!--フォーム-->
+<form name="action" id="action" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+
+    <!--次作業者フォーム-->
+    <div class="row">
+        <!--次工程：-->
+        <div class="col-2">
+            <select id="next_step" name="next_step" class="form-select" hidden></select></div>
+        <!--次部署：-->
+        <div class="col-3">
+            <select id="next_department" name="next_department" class="form-select" hidden></select></div>
+        <!--次作業者：-->
+        <div class="col-3">
+            <select id="next_operator" name="next_operator" class="form-select" hidden></select></div>
+    </div><br>
+    <script>document.getElementById("next_step").onchange = function(){next_step();};</script>
+    <script>document.getElementById("next_department").onchange = function(){next_step();};</script>
+    <script>document.getElementById("next_operator").onchange = function(){next_step();};</script>
+
+
+    <!--ボタン制御-->
+    {% if authority_flag == 1 %}
+
+        <!--entry系ボタン--><!--todo 複数テーブル同時入力は？-->
+        {% if entry_dict.action_name != '' %}
+        <button class="btn btn-primary mt-2" type="submit" formaction="{% url 'quality_change_management:action' entry_dict.action %}" form="action">{{ entry_dict.action_name }}</button>
+        {% endif %}
+
+        <!--function系ボタン-->
+        {% for key, value in function_dict.items %}
+        <button class="btn btn-primary mt-2" type="submit" formaction="{% url 'quality_change_management:action' value.action %}" form="action">{{ value.action_name }}</button>
+        {% endfor %}
+
+    {% endif %}<br><br>
+
+
+    <!--タブ生成処理-->
+    <ul class="nav nav-tabs">
+        {% for key, value in page_dict.items %}
+
+        <!--初期選択タブをアクティブ化-->
+        {% if value.default_page == 1 %}
+        <li class="nav-item">
+            <a class="nav-link active" href="#info_{{ value.page_id }}" data-toggle="tab">{{ value.page_name }}</a>
+        </li>
+
+        <!--初期選択タブ以外-->
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="#info_{{ value.page_id }}" data-toggle="tab">{{ value.page_name }}</a>
+        </li>
+
+        {% endif %}
+        {% endfor %}
+    </ul>
+
+
+    <!--タブ内容生成処理-->
+    <div class="tab-content">
+        {% for key, value in page_dict.items %}
+
+        <!--初期選択タブをアクティブ化-->
+        {% if value.default_page == 1 %}
+        <div id="info_{{ value.page_id }}" class="tab-pane active">
+            {{ value.page | safe }}
+        </div>
+
+        <!--初期選択タブ以外-->
+        {% else %}
+        <div id="info_{{ value.page_id }}" class="tab-pane">
+            {{ value.page | safe }}
+        </div>
+
+        {% endif %}
+        {% endfor %}
+    </div>
+
+</form>
+{% endblock %}
